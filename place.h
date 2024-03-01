@@ -4,7 +4,7 @@
 #include <systemc.h>
 
 // Place Interface:
-template <class T>
+template<unsigned int N = 1, unsigned int M = 1>
 class placeInterface : public sc_interface{
 public:
    virtual void addTokens(unsigned int n) = 0;
@@ -15,7 +15,8 @@ public:
 
 
 // Place Channel:
-class placeChannel : public placeInterface<unsigned int>{
+template<unsigned int N = 1, unsigned int M = 1>
+class placeChannel : public placeInterface<N, M>{
 
 private:
     unsigned int tokens;
@@ -26,15 +27,15 @@ public:
     tokens = initialTokens;
     }
 
-    void addTokens(unsigned int n) override{
+    void addTokens(unsigned int n) {
         tokens++;
     }
 
-    void removeTokens(unsigned int n) override{
+    void removeTokens(unsigned int n) {
         tokens--;
     }
 
-    unsigned int testTokens() override{
+    unsigned int testTokens() {
         return tokens;
     }    
 

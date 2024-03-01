@@ -5,7 +5,7 @@
 
 #include "place.h"
 
-template<unsigned int N = 1, unsigned int M = 1>
+template<unsigned int N=1, unsigned int M=1, unsigned int L=0>
 SC_MODULE(transition)
 {
     SC_CTOR(transition){        
@@ -14,8 +14,9 @@ SC_MODULE(transition)
     // sc_port<placeInterface<unsigned int>> in;
 	// sc_port<placeInterface<unsigned int>> out;
     
-    sc_port<placeInterface<>, N, SC_ALL_BOUND> in;
-    sc_port<placeInterface<>, M, SC_ALL_BOUND> out;
+    sc_port<placeInterface, N, SC_ALL_BOUND> in;
+    sc_port<placeInterface, M, SC_ALL_BOUND> out;
+    sc_port<placeInterface, L, SC_ZERO_OR_MORE_BOUND> inhibitors;
 
     void fire()
     {
@@ -26,14 +27,21 @@ SC_MODULE(transition)
             }
         }    
 
+        for (unsigned int i=0; i < L; i++){ 
+            if (inhibitors[i]->testTokens() > 0) {
+                std::cout << this->name() << ": NOT Fired" << std::endl;
+                return;
+            }
+        }    
+
         for (unsigned int i=0; i < N; i++){
-            in[i]->removeTokens(1);
+            in[i]->removeTokens();
         }
         for (unsigned int i=0; i< M; i++){
-            out[i]->addTokens(1);
+            out[i]->addTokens();
         }
 
-        std::cout << this->name() << ": Fired" << std::endl;
+        std::cout << this->name() << ": Fired"  << std::endl;
         
     }
     

@@ -4,19 +4,20 @@
 #include <systemc.h>
 
 // Place Interface:
-template<unsigned int N = 1, unsigned int M = 1>
+//template<unsigned int Win = 1, unsigned int Wout = 1>
 class placeInterface : public sc_interface{
 public:
-   virtual void addTokens(unsigned int n) = 0;
-   virtual void removeTokens(unsigned int n) = 0;
-   virtual unsigned int testTokens() = 0;
+   virtual void addTokens() = 0;
+   virtual void removeTokens() = 0;
+   virtual bool testTokens() = 0;
 };
 
 
 
 // Place Channel:
-template<unsigned int N = 1, unsigned int M = 1>
-class placeChannel : public placeInterface<N, M>{
+// Add Weights, modify methods
+template<unsigned int Win = 1, unsigned int Wout = 1>
+class placeChannel : public placeInterface{
 
 private:
     unsigned int tokens;
@@ -27,16 +28,16 @@ public:
     tokens = initialTokens;
     }
 
-    void addTokens(unsigned int n) {
-        tokens++;
+    void addTokens() override{
+        tokens= tokens + Win;
     }
 
-    void removeTokens(unsigned int n) {
-        tokens--;
+    void removeTokens() override {
+        tokens= tokens - Wout;
     }
 
-    unsigned int testTokens() {
-        return tokens;
+    bool testTokens() override{
+        return tokens >= Wout;
     }    
 
 };
